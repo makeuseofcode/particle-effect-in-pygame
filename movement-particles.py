@@ -13,7 +13,7 @@ class Particle:
         self.y = y
         self.dx = random.uniform(-1, 1)
         self.dy = random.uniform(-1, 1)
-        self.lifetime = 60  # Number of frames the particle will exist
+        self.lifetime = 60  
 
     def update(self):
         self.x += self.dx
@@ -21,7 +21,9 @@ class Particle:
         self.lifetime -= 1
 
     def draw(self, window):
-        pygame.draw.circle(window, (200, 200, 200), (int(self.x), int(self.y)), 2)
+        color = (200, 200, 200)
+        position = (int(self.x), int(self.y))
+        pygame.draw.circle(window, color, position, 2)
 
 # Particle system class
 class ParticleSystem:
@@ -74,18 +76,23 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+    particle_y = player_y + player_height // 2
+    particle_x = player_x + player_width
+
     keys = pygame.key.get_pressed()
+    boundary = player_x < window_width - player_width
     if keys[pygame.K_LEFT] and player_x > 0:
         player_x -= 5
-        particle_system.add_particle(player_x + player_width, player_y + player_height // 2)
-    if keys[pygame.K_RIGHT] and player_x < window_width - player_width:
+        particle_system.add_particle(particle_x, particle_y)
+    if keys[pygame.K_RIGHT] and boundary:
         player_x += 5
-        particle_system.add_particle(player_x, player_y + player_height // 2)
+        particle_system.add_particle(player_x, particle_y)
 
     particle_system.update()
 
     window.fill(BLACK)
-    pygame.draw.rect(window, WHITE, (player_x, player_y, player_width, player_height))
+    player_pos = (player_x, player_y, player_width, player_height)
+    pygame.draw.rect(window, WHITE, player_pos)
     particle_system.draw(window)
 
     pygame.display.flip()
